@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 3000;
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
+var {generateMessage} = require('./utils/message.js');
 
 app.use(express.static(publicPath));
 
@@ -18,27 +19,15 @@ io.on('connection', (socket) => {
     console.log('User has disconnected');
   });
 
-  socket.broadcast.emit('newMessage', {
-    from: 'Admin',
-    text: 'A new user joined',
-    createdAt: new Date().getTime()
-  });
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'A new user joined'));
 
-  socket.emit('newMessage', {
-    from: 'Admin',
-    text: 'Welcome to the chat',
-    createdAt: new Date().getTime()
-  });
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat'));
 
   socket.on('createMessage', (email) => {
     console.log('create Email', email);
     email.createdAt = new Date().getTime();
     var {from, text, createdAt} = email;
-    io.emit('newMessage', {
-      from,
-      text,
-      createdAt
-    });
+    io.emit('newMessage',  generateMessage(from, text));
   });
 });
 
