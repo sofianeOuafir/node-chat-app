@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
-var {generateMessage} = require('./utils/message.js');
+var {generateMessage, generateLocationMessage} = require('./utils/message.js');
 
 app.use(express.static(publicPath));
 
@@ -24,9 +24,12 @@ io.on('connection', (socket) => {
   socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat'));
 
   socket.on('createMessage', (message, callback) => {
-    console.log('create Message', message);
     io.emit('newMessage',  generateMessage(message.from, message.text));
     callback('Everything went well');
+  });
+
+  socket.on('createLocationMessage', (message) => {
+    io.emit('newLocationMessage', generateLocationMessage('User', message.latitude, message.longitude));
   });
 });
 
