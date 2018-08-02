@@ -25,7 +25,7 @@ io.on('connection', (socket) => {
 
   socket.on('createMessage', (message, callback) => {
     io.emit('newMessage',  generateMessage(message.from, message.text));
-    callback('Everything went well');
+    callback();
   });
 
   socket.on('createLocationMessage', (message) => {
