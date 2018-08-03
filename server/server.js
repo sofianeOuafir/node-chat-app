@@ -9,11 +9,21 @@ var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
 var {generateMessage, generateLocationMessage} = require('./utils/message.js');
+const {isRealString} = require('./utils/validation.js');
 
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
-  console.log('New user connected');
+  socket.on('join', (params, callback) => {
+    console.log(params);
+    var {name, room} = params;
+    var errors;
+    if(!isRealString(name) || !isRealString(room)){
+      return callback('Name and room name are required');
+    }
+
+    callback();
+  });
 
   socket.on('disconnect', () => {
     console.log('User has disconnected');
